@@ -2,17 +2,27 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { CoffeeIcon } from './CoffeeIcon';
-import { colors, radii } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { radii } from '../constants/theme';
 
 export function DrawerMenuButton() {
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
   return (
     <TouchableOpacity
       accessibilityRole="button"
       activeOpacity={0.75}
       onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-      style={styles.menuButton}>
+      style={[
+        styles.menuButton,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          borderWidth: 1,
+        },
+      ]}
+    >
       <CoffeeIcon name="menu" size={24} color={colors.text} />
     </TouchableOpacity>
   );
@@ -25,6 +35,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.sm,
-    backgroundColor: colors.surface,
   },
 });

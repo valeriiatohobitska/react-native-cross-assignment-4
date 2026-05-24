@@ -1,29 +1,44 @@
 import React from 'react';
-import { StatusBar, StyleSheet, useColorScheme, useWindowDimensions, View } from 'react-native';
+import { StatusBar, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider } from 'react-redux';
 import { DrawerNavigator } from './src/navigation/DrawerNavigator';
-import { colors, layout } from './src/constants/theme';
+import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { store } from './src/store/store';
+import { layout } from './src/constants/theme';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+function AppContent() {
+  const { theme, colors } = useTheme();
   const { width } = useWindowDimensions();
   const appWidth = Math.min(width, layout.phoneMaxWidth);
 
   return (
-    <SafeAreaProvider>
+    <>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={colors.background}
       />
-      <View style={styles.root}>
-        <View style={[styles.phone, { width: appWidth }]}>
+      <View style={[styles.root, { backgroundColor: colors.background }]}>
+        <View style={[styles.phone, { width: appWidth, backgroundColor: colors.background }]}>
           <NavigationContainer>
             <DrawerNavigator />
           </NavigationContainer>
         </View>
       </View>
-    </SafeAreaProvider>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <ThemeProvider>
+        <SafeAreaProvider>
+          <AppContent />
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </Provider>
   );
 }
 
@@ -31,12 +46,10 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: colors.background,
   },
   phone: {
     flex: 1,
     overflow: 'hidden',
-    backgroundColor: colors.background,
   },
 });
 

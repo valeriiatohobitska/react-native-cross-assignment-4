@@ -1,16 +1,21 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useDispatch } from 'react-redux';
 import { fetchCoffeeProduct } from '../api/coffeeApi';
 import { PayButton } from '../components/PayButton';
+import { useTheme } from '../context/ThemeContext';
+import { addItem } from '../store/cartSlice';
 import { SCREENS } from '../constants/screens';
-import { colors, radii, spacing, typography } from '../constants/theme';
+import { radii, spacing, typography } from '../constants/theme';
 import { CoffeeProduct } from '../data/products';
 import { HomeStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof SCREENS.PRODUCT_DETAILS>;
 
 export function ProductDetailsScreen({ navigation, route }: Props) {
+  const { colors } = useTheme();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState<CoffeeProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -35,20 +40,34 @@ export function ProductDetailsScreen({ navigation, route }: Props) {
     loadProduct();
   }, [loadProduct]);
 
+  const handleAddToCart = () => {
+    if (!product) {
+      return;
+    }
+    dispatch(
+      addItem({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      }),
+    );
+  };
+
   if (isLoading) {
     return (
-      <View style={styles.emptyState}>
+      <View style={[styles.emptyState, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.coffee} />
-        <Text style={styles.description}>Loading drink details...</Text>
+        <Text style={[styles.description, { color: colors.muted }]}>Loading drink details...</Text>
       </View>
     );
   }
 
   if (!product) {
     return (
-      <View style={styles.emptyState}>
-        <Text style={styles.title}>Drink not found</Text>
-        <Text style={styles.description}>
+      <View style={[styles.emptyState, { backgroundColor: colors.background }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Drink not found</Text>
+        <Text style={[styles.description, { color: colors.muted }]}>
           {errorMessage || 'Product id was not passed or does not exist.'}
         </Text>
         {errorMessage ? <PayButton title="Try again" onPress={loadProduct} /> : null}
@@ -59,23 +78,28 @@ export function ProductDetailsScreen({ navigation, route }: Props) {
 
   return (
     <ScrollView
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}>
       <Image source={{ uri: product.imageUrl }} style={styles.image} />
-      <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.price}>{product.price}</Text>
-      <Text style={styles.description}>{product.description}</Text>
+      <Text style={[styles.title, { color: colors.text }]}>{product.title}</Text>
+      <Text style={[styles.price, { color: colors.coffeeDark }]}>{product.price}</Text>
+      <Text style={[styles.description, { color: colors.muted }]}>{product.description}</Text>
       {product.ingredients?.length ? (
         <View style={styles.ingredientsBlock}>
-          <Text style={styles.ingredientsTitle}>Ingredients</Text>
-          <Text style={styles.ingredientsText}>{product.ingredients.join(', ')}</Text>
+          <Text style={[styles.ingredientsTitle, { color: colors.text }]}>Ingredients</Text>
+          <Text style={[styles.ingredientsText, { color: colors.muted }]}>
+            {product.ingredients.join(', ')}
+          </Text>
         </View>
       ) : null}
-      <PayButton
-        title="Order"
-        onPress={() => navigation.navigate(SCREENS.CHECKOUT, { productId: product.id })}
-      />
+      <View style={styles.actions}>
+        <PayButton title="Add to Cart" onPress={handleAddToCart} />
+        <PayButton
+          title="Order"
+          onPress={() => navigation.navigate(SCREENS.CHECKOUT, { productId: product.id })}
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -83,7 +107,6 @@ export function ProductDetailsScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   content: {
     padding: spacing.lg,
@@ -93,22 +116,18 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 1.15,
     borderRadius: radii.md,
-    backgroundColor: colors.surface,
   },
   title: {
-    color: colors.text,
     fontSize: typography.title,
     fontWeight: '900',
     marginTop: spacing.xl,
   },
   price: {
-    color: colors.coffeeDark,
     fontSize: typography.heading,
     fontWeight: '900',
     marginTop: spacing.sm,
   },
   description: {
-    color: colors.muted,
     fontSize: typography.body,
     lineHeight: 21,
     marginTop: spacing.lg,
@@ -117,20 +136,21 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   ingredientsTitle: {
-    color: colors.text,
     fontSize: typography.body,
     fontWeight: '900',
   },
   ingredientsText: {
-    color: colors.muted,
     fontSize: typography.body,
     lineHeight: 21,
     marginTop: spacing.xs,
+  },
+  actions: {
+    gap: spacing.sm,
+    marginTop: spacing.xl,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: colors.background,
   },
 });

@@ -17,16 +17,21 @@ import { CoffeeIcon } from '../components/CoffeeIcon';
 import { ProductCard } from '../components/ProductCard';
 import { SearchField } from '../components/SearchField';
 import { ToolbarButton } from '../components/ToolbarButton';
+import { useTheme } from '../context/ThemeContext';
 import { SCREENS } from '../constants/screens';
-import { colors, layout, spacing, typography } from '../constants/theme';
+import { layout, spacing, typography } from '../constants/theme';
 import { CoffeeProduct } from '../data/products';
 import { HomeStackParamList } from '../navigation/types';
 
-type Navigation = NativeStackNavigationProp<HomeStackParamList, typeof SCREENS.HOME>;
+type Navigation = NativeStackNavigationProp<
+  HomeStackParamList,
+  typeof SCREENS.HOME
+>;
 
 export function HomeScreen() {
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [products, setProducts] = useState<CoffeeProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -46,7 +51,9 @@ export function HomeScreen() {
       const menu = await fetchCoffeeMenu();
       setProducts(menu);
     } catch {
-      setErrorMessage('Could not load the coffee menu. Check your connection and try again.');
+      setErrorMessage(
+        'Could not load the coffee menu. Check your connection and try again.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -60,12 +67,14 @@ export function HomeScreen() {
     <ProductCard
       product={item}
       width={cardWidth}
-      onPress={() => navigation.navigate(SCREENS.PRODUCT_DETAILS, { productId: item.id })}
+      onPress={() =>
+        navigation.navigate(SCREENS.PRODUCT_DETAILS, { productId: item.id })
+      }
     />
   );
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <FlatList
         key={columns}
         data={products}
@@ -73,8 +82,12 @@ export function HomeScreen() {
         renderItem={renderProduct}
         keyExtractor={item => item.id}
         columnWrapperStyle={columns > 1 ? styles.productRow : undefined}
+        ItemSeparatorComponent={() => <View style={styles.rowSeparator} />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.menuContent, { paddingTop: insets.top + spacing.sm }]}
+        contentContainerStyle={[
+          styles.menuContent,
+          { paddingTop: insets.top + spacing.sm },
+        ]}
         ListHeaderComponent={
           <View style={styles.menuHeader}>
             <View style={styles.topRow}>
@@ -82,14 +95,23 @@ export function HomeScreen() {
                 accessibilityRole="button"
                 activeOpacity={0.75}
                 onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-                style={styles.iconButton}>
+                style={[
+                  styles.iconButton,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    borderWidth: 1,
+                  },
+                ]}
+              >
                 <CoffeeIcon name="menu" size={24} color={colors.text} />
               </TouchableOpacity>
               <TouchableOpacity
                 accessibilityRole="search"
                 activeOpacity={0.85}
                 onPress={() => navigation.navigate(SCREENS.SEARCH)}
-                style={styles.searchWrap}>
+                style={styles.searchWrap}
+              >
                 <SearchField value="Hot" />
               </TouchableOpacity>
             </View>
@@ -100,18 +122,28 @@ export function HomeScreen() {
             {isLoading ? (
               <View style={styles.feedback}>
                 <ActivityIndicator color={colors.coffee} />
-                <Text style={styles.feedbackText}>Loading coffee menu...</Text>
+                <Text style={[styles.feedbackText, { color: colors.muted }]}>
+                  Loading coffee menu...
+                </Text>
               </View>
             ) : null}
             {errorMessage ? (
               <View style={styles.feedback}>
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text style={[styles.errorText, { color: colors.muted }]}>
+                  {errorMessage}
+                </Text>
                 <TouchableOpacity
                   accessibilityRole="button"
                   activeOpacity={0.8}
                   onPress={loadProducts}
-                  style={styles.retryButton}>
-                  <Text style={styles.retryButtonText}>Try again</Text>
+                  style={[
+                    styles.retryButton,
+                    { backgroundColor: colors.coffee },
+                  ]}
+                >
+                  <Text style={[styles.retryButtonText, { color: '#FFFFFF' }]}>
+                    Try again
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : null}
@@ -125,7 +157,6 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   menuContent: {
     paddingHorizontal: spacing.lg,
@@ -147,7 +178,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: colors.surface,
   },
   searchWrap: {
     flex: 1,
@@ -163,12 +193,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
   },
   feedbackText: {
-    color: colors.muted,
     fontSize: typography.caption,
     fontWeight: '700',
   },
   errorText: {
-    color: colors.muted,
     fontSize: typography.body,
     lineHeight: 21,
     textAlign: 'center',
@@ -179,14 +207,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    backgroundColor: colors.black,
   },
   retryButtonText: {
-    color: colors.background,
     fontSize: typography.caption,
     fontWeight: '900',
   },
   productRow: {
     gap: spacing.md,
+  },
+  rowSeparator: {
+    height: spacing.md,
   },
 });

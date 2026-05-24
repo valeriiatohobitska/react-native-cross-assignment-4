@@ -8,8 +8,9 @@ import { CheckoutHeader } from '../components/CheckoutHeader';
 import { PaymentOption } from '../components/PaymentOption';
 import { PayButton } from '../components/PayButton';
 import { SuccessModal } from '../components/SuccessModal';
+import { useTheme } from '../context/ThemeContext';
 import { SCREENS } from '../constants/screens';
-import { colors, layout, spacing, typography } from '../constants/theme';
+import { layout, spacing, typography } from '../constants/theme';
 import { CoffeeProduct } from '../data/products';
 import { HomeStackParamList } from '../navigation/types';
 
@@ -17,6 +18,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, typeof SCREENS.CHECKOUT>
 
 export function CheckoutScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   const [paymentMethod, setPaymentMethod] = useState<'apple' | 'card'>('apple');
   const [isPaySheetVisible, setIsPaySheetVisible] = useState(false);
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
@@ -45,24 +47,29 @@ export function CheckoutScreen({ navigation, route }: Props) {
   }, [loadProduct]);
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
       <ScrollView
-        style={styles.screen}
+        style={[styles.screen, { backgroundColor: colors.background }]}
         contentContainerStyle={[styles.checkoutContent, { paddingTop: insets.top }]}
         showsVerticalScrollIndicator={false}>
         <CheckoutHeader onBack={() => navigation.goBack()} />
         <View style={styles.checkoutCopy}>
-          <Text style={styles.checkoutTitle}>Choose a payment method</Text>
+          <Text style={[styles.checkoutTitle, { color: colors.text }]}>
+            Choose a payment method
+          </Text>
           {isLoadingProduct ? (
             <View style={styles.loadingRow}>
               <ActivityIndicator color={colors.coffee} />
-              <Text style={styles.checkoutDescription}>Loading order details...</Text>
+              <Text style={[styles.checkoutDescription, { color: colors.muted }]}>
+                Loading order details...
+              </Text>
             </View>
           ) : (
-            <Text style={styles.checkoutDescription}>
+            <Text style={[styles.checkoutDescription, { color: colors.muted }]}>
               {product
                 ? `You are ordering ${product.title} for ${product.price}.`
-                : errorMessage || 'Product id was not passed, so the order will be reviewed before payment.'}
+                : errorMessage ||
+                  'Product id was not passed, so the order will be reviewed before payment.'}
             </Text>
           )}
         </View>
@@ -114,11 +121,9 @@ export function CheckoutScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   checkoutContent: {
     paddingHorizontal: spacing.lg,
@@ -128,12 +133,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxl,
   },
   checkoutTitle: {
-    color: colors.text,
     fontSize: typography.heading,
     fontWeight: '900',
   },
   checkoutDescription: {
-    color: colors.muted,
     fontSize: typography.caption,
     lineHeight: 18,
     marginTop: spacing.sm,

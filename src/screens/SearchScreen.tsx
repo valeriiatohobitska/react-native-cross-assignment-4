@@ -5,15 +5,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CoffeeIcon } from '../components/CoffeeIcon';
 import { RecentSearchList } from '../components/RecentSearchList';
 import { SearchField } from '../components/SearchField';
-import { colors, spacing } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { spacing } from '../constants/theme';
 import { recentSearches } from '../data/products';
 
 export function SearchScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={[styles.searchOnlyHeader, { paddingTop: insets.top + spacing.sm }]}>
         <TouchableOpacity
           accessibilityRole="button"
@@ -34,7 +36,6 @@ export function SearchScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   searchOnlyHeader: {
     flexDirection: 'row',

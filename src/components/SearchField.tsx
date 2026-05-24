@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { colors, layout, radii, spacing, typography } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { layout, radii, spacing, typography } from '../constants/theme';
 import { CoffeeIcon } from './CoffeeIcon';
 
 type SearchFieldProps = {
@@ -18,8 +19,10 @@ export function SearchField({
   autoFocus = false,
   onSubmit,
 }: SearchFieldProps) {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
       <CoffeeIcon name="search" size={16} color={colors.coffee} />
       <TextInput
         value={value}
@@ -29,7 +32,7 @@ export function SearchField({
         returnKeyType="search"
         onSubmitEditing={onSubmit}
         placeholderTextColor={colors.muted}
-        style={styles.input}
+        style={[styles.input, { color: colors.text }]}
       />
     </View>
   );
@@ -43,11 +46,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
     borderRadius: radii.pill,
-    backgroundColor: colors.surface,
   },
   input: {
     flex: 1,
-    color: colors.text,
     fontSize: typography.body,
     paddingVertical: 0,
   },

@@ -1,11 +1,47 @@
-This is a React Native homework project for cross assignment 5.
+This is a React Native homework project for cross assignment 6.
 
-![Coffee app menu screen](image.png)
-![Coffee app search screen](image-1.png)
-![Coffee app checkout screen](image-2.png)
-![Coffee app Apple Pay confirmation screen](image-3.png)
-![Coffee app success modal](image-4.png)
-![Horizontal view](image-5.png)
+## Assignment 6: Context API and Redux
+
+Assignment 6 adds global state management on top of the existing navigation and API work from assignment 5.
+
+### Context API — Theme (light / dark)
+
+`ThemeContext` provides a `theme` value (`'light'` | `'dark'`), a full set of
+`colors`, and a `toggleTheme` function. `ThemeProvider` wraps the root of the
+app so every screen and component reads colours from the context instead of the
+static `src/constants/theme.ts` file.
+
+The toggle is exposed as a `Switch` on the **Profile** screen. Switching it
+re-renders the whole app in the opposite colour scheme.
+
+Relevant files:
+
+- `src/context/ThemeContext.tsx` — context, provider and `useTheme()` hook
+- `src/screens/ProfileScreen.tsx` — Switch to toggle the theme
+- Every screen and component uses `useTheme()` for colours
+
+### Redux — Shopping Cart
+
+`cartSlice` manages the cart state with three reducers:
+
+| Action                             | Behaviour                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------- |
+| `addItem(product)`                 | Adds the product with `quantity: 1`; increments quantity if it is already in the cart |
+| `removeItem(id)`                   | Removes the item with the given id                                                    |
+| `updateQuantity({ id, quantity })` | Updates item quantity; removes the item if quantity ≤ 0                               |
+
+The Redux `store` is provided at the root via `<Provider>`. Screens access state
+with `useSelector` and dispatch actions with `useDispatch`.
+
+Relevant files:
+
+- `src/store/cartSlice.ts` — slice with `addItem`, `removeItem`, `updateQuantity`
+- `src/store/store.ts` — `configureStore` with `RootState` and `AppDispatch` types
+- `src/screens/CartScreen.tsx` — full cart UI: list, quantity controls, total, empty state
+- `src/screens/ProductDetailsScreen.tsx` — "Add to Cart" button dispatches `addItem`
+- `src/navigation/TabNavigator.tsx` — cart tab badge shows total item count
+
+---
 
 The app is based on a Figma coffee ordering prototype. Assignment 5 adds
 external API data loading on top of the Stack, Tab and Drawer navigation:
@@ -31,12 +67,13 @@ The app screen is built from reusable React Native components stored in `src/com
 - `RecentSearchList` - recent search item with a remove action.
 - `CheckoutHeader` - checkout title bar with back button.
 - `PaymentOption` - Apple Pay and Credit card option cards.
-- `PayButton` - black Apple Pay action button.
+- `PayButton` - action button used across the app.
 - `ApplePaySheet` - visual mock of the Apple Pay confirmation sheet.
 - `SuccessModal` - order confirmation dialog.
 - `CoffeeIcon` - wrapper around Lucide vector icons from `@react-native-vector-icons/lucide`.
 
-Shared colors, spacing, radii, typography and platform shadows are stored in `src/constants/theme.ts`.
+Shared spacing, radii, typography and platform shadows are stored in `src/constants/theme.ts`.
+Theme colours (light and dark) are provided by `src/context/ThemeContext.tsx`.
 Demo data is stored in `src/data/products.ts`.
 API request logic is stored in `src/api/coffeeApi.ts`.
 Navigation constants are stored in `src/constants/screens.ts`, and navigators
@@ -48,7 +85,7 @@ Icons use the optional `react-native-vector-icons` family package recommended in
 
 ## API and Navigation Demo
 
-[Watch API list and navigation demo](screenshots/navigation-demo.mov)
+[Watch navigation demo](screenshots/navigation-demo.mov)
 
 The demo shows the API coffee list, product details navigation, checkout, tabs
 and drawer screens.

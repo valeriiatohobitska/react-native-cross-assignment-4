@@ -2,7 +2,8 @@ import React from 'react';
 import { ComponentProps } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Lucide } from '@react-native-vector-icons/lucide/static';
-import { colors, layout, spacing, typography } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { layout, spacing, typography } from '../constants/theme';
 import { CoffeeIcon } from './CoffeeIcon';
 
 type TabItem = {
@@ -20,8 +21,14 @@ const tabs: TabItem[] = [
 ];
 
 export function BottomTabBar() {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.background, borderTopColor: colors.surface },
+      ]}>
       {tabs.map(tab => (
         <View key={tab.id} style={styles.item}>
           <CoffeeIcon
@@ -29,7 +36,7 @@ export function BottomTabBar() {
             size={25}
             color={tab.active ? colors.coffee : colors.softMuted}
           />
-          <Text style={[styles.label, tab.active && styles.activeLabel]}>
+          <Text style={[styles.label, { color: tab.active ? colors.text : colors.muted }]}>
             {tab.label}
           </Text>
         </View>
@@ -45,9 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.background,
     borderTopWidth: 1,
-    borderTopColor: colors.surface,
   },
   item: {
     minWidth: 64,
@@ -55,11 +60,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   label: {
-    color: colors.muted,
     fontSize: typography.tiny,
-  },
-  activeLabel: {
-    color: colors.text,
-    fontWeight: '800',
   },
 });

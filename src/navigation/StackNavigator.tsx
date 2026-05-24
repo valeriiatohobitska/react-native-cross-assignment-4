@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useTheme } from '../context/ThemeContext';
 import { SCREENS } from '../constants/screens';
-import { colors, typography } from '../constants/theme';
+import { typography } from '../constants/theme';
 import { CheckoutScreen } from '../screens/CheckoutScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ProductDetailsScreen } from '../screens/ProductDetailsScreen';
@@ -11,12 +12,9 @@ import { HomeStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
-function HeaderTitle({ title }: { title: string }) {
-  return <Text style={styles.headerTitle}>{title}</Text>;
-}
-
 function ProductDetailsHeaderTitle() {
-  return <HeaderTitle title="Drink details" />;
+  const { colors } = useTheme();
+  return <Text style={[styles.headerTitle, { color: colors.text }]}>Drink details</Text>;
 }
 
 const productDetailsOptions = {
@@ -24,9 +22,10 @@ const productDetailsOptions = {
 };
 
 export function StackNavigator() {
+  const { colors } = useTheme();
+
   return (
     <Stack.Navigator
-      // Stack keeps the order flow linear: menu -> details -> checkout.
       screenOptions={{
         headerShadowVisible: false,
         headerStyle: { backgroundColor: colors.background },
@@ -59,7 +58,6 @@ export function StackNavigator() {
 
 const styles = StyleSheet.create({
   headerTitle: {
-    color: colors.text,
     fontSize: typography.body,
     fontWeight: '900',
   },

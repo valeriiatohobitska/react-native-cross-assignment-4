@@ -2,9 +2,12 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ComponentProps } from 'react';
 import { Lucide } from '@react-native-vector-icons/lucide/static';
+import { useSelector } from 'react-redux';
 import { CoffeeIcon } from '../components/CoffeeIcon';
+import { useTheme } from '../context/ThemeContext';
+import { RootState } from '../store/store';
 import { SCREENS } from '../constants/screens';
-import { colors, layout, typography } from '../constants/theme';
+import { layout, typography } from '../constants/theme';
 import { CartScreen } from '../screens/CartScreen';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
@@ -42,6 +45,11 @@ function ProfileTabIcon({ color, size }: { color: string; size: number }) {
 }
 
 export function TabNavigator() {
+  const { colors } = useTheme();
+  const cartCount = useSelector((state: RootState) =>
+    state.cart.reduce((sum, item) => sum + item.quantity, 0),
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -68,7 +76,11 @@ export function TabNavigator() {
       <Tab.Screen
         name={SCREENS.TAB_CART}
         component={CartScreen}
-        options={{ title: 'Cart', tabBarIcon: CartTabIcon }}
+        options={{
+          title: 'Cart',
+          tabBarIcon: CartTabIcon,
+          tabBarBadge: cartCount > 0 ? cartCount : undefined,
+        }}
       />
       <Tab.Screen
         name={SCREENS.TAB_HISTORY}

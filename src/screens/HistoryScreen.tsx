@@ -1,12 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, typography } from '../constants/theme';
 
 export function HistoryScreen() {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.screen}>
-      <Text style={styles.title}>Order history</Text>
-      <Text style={styles.description}>Recent coffee orders and receipts are grouped here.</Text>
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>Order history</Text>
+      <Text style={[styles.description, { color: colors.muted }]}>
+        Recent coffee orders and receipts are grouped here.
+      </Text>
     </View>
   );
 }
@@ -16,15 +21,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: spacing.lg,
-    backgroundColor: colors.background,
   },
   title: {
-    color: colors.text,
     fontSize: typography.title,
     fontWeight: '900',
   },
   description: {
-    color: colors.muted,
     fontSize: typography.body,
     lineHeight: 21,
     marginTop: spacing.sm,

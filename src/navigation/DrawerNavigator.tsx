@@ -1,8 +1,9 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { CoffeeIcon } from '../components/CoffeeIcon';
+import { useTheme } from '../context/ThemeContext';
 import { SCREENS } from '../constants/screens';
-import { colors, typography } from '../constants/theme';
+import { typography } from '../constants/theme';
 import { ContactsScreen } from '../screens/ContactsScreen';
 import { HelpScreen } from '../screens/HelpScreen';
 import { LogoutScreen } from '../screens/LogoutScreen';
@@ -40,6 +41,8 @@ function LogoutDrawerIcon({ color, size }: { color: string; size: number }) {
 }
 
 export function DrawerNavigator() {
+  const { colors } = useTheme();
+
   return (
     <Drawer.Navigator
       screenOptions={{

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { colors, spacing, typography } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
+import { spacing, typography } from '../constants/theme';
 import { RecentSearch } from '../data/products';
 import { CoffeeIcon } from './CoffeeIcon';
 
@@ -9,13 +10,17 @@ type RecentSearchListProps = {
 };
 
 export function RecentSearchList({ searches }: RecentSearchListProps) {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Recent searches</Text>
+      <Text style={[styles.heading, { color: colors.text }]}>Recent searches</Text>
       {searches.map(search => (
         <View key={search.id} style={styles.row}>
-          <Text style={styles.term}>{search.title}</Text>
-          <TouchableOpacity activeOpacity={0.7} style={styles.removeButton}>
+          <Text style={[styles.term, { color: colors.text }]}>{search.title}</Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[styles.removeButton, { backgroundColor: colors.text }]}>
             <CoffeeIcon name="x" size={8} color={colors.background} />
           </TouchableOpacity>
         </View>
@@ -31,7 +36,6 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
   },
   heading: {
-    color: colors.text,
     fontSize: typography.caption,
     fontWeight: '500',
   },
@@ -41,7 +45,6 @@ const styles = StyleSheet.create({
     gap: spacing.xxl,
   },
   term: {
-    color: colors.text,
     fontSize: typography.body,
   },
   removeButton: {
@@ -50,6 +53,5 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.text,
   },
 });

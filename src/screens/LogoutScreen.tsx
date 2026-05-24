@@ -4,8 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerMenuButton } from '../components/DrawerMenuButton';
+import { useTheme } from '../context/ThemeContext';
 import { SCREENS } from '../constants/screens';
-import { colors, radii, spacing, typography } from '../constants/theme';
+import { radii, spacing, typography } from '../constants/theme';
 import { RootDrawerParamList } from '../navigation/types';
 
 type Navigation = DrawerNavigationProp<RootDrawerParamList, typeof SCREENS.DRAWER_LOGOUT>;
@@ -13,13 +14,14 @@ type Navigation = DrawerNavigationProp<RootDrawerParamList, typeof SCREENS.DRAWE
 export function LogoutScreen() {
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + spacing.sm }]}>
+    <View style={[styles.screen, { paddingTop: insets.top + spacing.sm, backgroundColor: colors.background }]}>
       <DrawerMenuButton />
       <View style={styles.content}>
-        <Text style={styles.title}>Logged out</Text>
-        <Text style={styles.description}>
+        <Text style={[styles.title, { color: colors.text }]}>Logged out</Text>
+        <Text style={[styles.description, { color: colors.muted }]}>
           You have left the demo profile. Sign in again to continue ordering coffee.
         </Text>
         <TouchableOpacity
@@ -31,8 +33,8 @@ export function LogoutScreen() {
               params: { screen: SCREENS.HOME },
             })
           }
-          style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Log in</Text>
+          style={[styles.primaryButton, { backgroundColor: colors.coffee }]}>
+          <Text style={[styles.primaryButtonText, { color: '#FFFFFF' }]}>Log in</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -44,19 +46,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
-    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
   },
   title: {
-    color: colors.text,
     fontSize: typography.title,
     fontWeight: '900',
   },
   description: {
-    color: colors.muted,
     fontSize: typography.body,
     lineHeight: 21,
     marginTop: spacing.sm,
@@ -66,11 +65,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.sm,
-    backgroundColor: colors.black,
     marginTop: spacing.xl,
   },
   primaryButtonText: {
-    color: colors.background,
     fontSize: typography.body,
     fontWeight: '900',
   },
